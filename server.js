@@ -5,13 +5,13 @@ const cors = require("cors");
 // const port = 3000;
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-const accountSid = "AC3876eee03c186a96197e793901d801a3";
-const authToken = "a34d0c345f8a8c9d8e61a00b92531efb";
-const verifySid = "VA96a578591066801d90d2dee7940a207f";
+const accountSid = process.env.accountSid;
+const authToken = process.env.authToken;
+const verifySid = process.env.verifySid;
 const client = require("twilio")(accountSid, authToken);
-const friendlyName= "Global Vistar"
+const friendlyName = "Global Vistar";
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -19,11 +19,13 @@ app.get("/", (req, res) => {
 
 app.post("/sendOTP", (req, res) => {
   var { phoneNumber } = req.body;
+  if (phoneNumber == undefined || phoneNumber.length != 10)
+    res.json("Invalid phone Number");
   phoneNumber = "+91" + phoneNumber;
-  console.log("OTP sent to ", phoneNumber);
+  console.log("Sending OTP to ", phoneNumber);
   client.verify.v2
     .services(verifySid)
-    .verifications.create({ friendlyName:friendlyName,to: phoneNumber, channel: "sms" })
+    .verifications.create({ to: phoneNumber, channel: "sms" })
     .then((verification) => {
       console.log(verification);
       res.json("OTP sent!");
@@ -45,6 +47,6 @@ app.post("/verifyOTP", (req, res) => {
     });
 });
 
-app.listen(process.env.PORT || 80, () => {
-  console.log(`App listening on port http://localhost:80`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`App listening on port http://localhost:3000`);
 });
