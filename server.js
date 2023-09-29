@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const cors = require("cors");
-const port = 3000;
+// const port = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -12,6 +12,7 @@ const authToken = "a34d0c345f8a8c9d8e61a00b92531efb";
 const verifySid = "VA96a578591066801d90d2dee7940a207f";
 const client = require("twilio")(accountSid, authToken);
 const friendlyName= "Global Vistar"
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -44,6 +45,6 @@ app.post("/verifyOTP", (req, res) => {
     });
 });
 
-app.listen(port, () => {
-  console.log(`App listening on port http://localhost:${port}`);
+app.listen(process.env.PORT || 80, () => {
+  console.log(`App listening on port http://localhost:80`);
 });
