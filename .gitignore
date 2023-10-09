@@ -132,3 +132,5 @@ dist
 #test files
 env.js
 server2.js
+
+prod
