@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const { authenticateJwt, SECRET } = require("../middleware/auth");
 const { User, Products } = require("../db");
@@ -7,12 +6,13 @@ const router = express.Router();
 
 router.get("/me", authenticateJwt, async (req, res) => {
   const user = await User.findOne({ username: req.user.username });
+  console.log(user);
   if (!user) {
     res.status(403).json({ msg: "User doesn't exist" });
     return;
   }
   res.json({
-    username: user.username,
+    user,
   });
 });
 
@@ -38,18 +38,29 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { username, password } = req.headers;
-  const user = await User.findOne({ username, password });
+  const { phoneNumber } = req.body;
+  const user = await User.findOne({ phoneNumber });
+  console.log(phoneNumber + "trying to login");
   if (user) {
-    const token = jwt.sign({ username, role: "user" }, SECRET, {
+    const token = jwt.sign({ phoneNumber, role: "user" }, SECRET, {
       expiresIn: "1h",
     });
     res.json({ message: "Logged in successfully", token });
   } else {
-    res.status(403).json({ message: "Invalid username or password" });
+    res.status(403).json({ message: "User not found" });
   }
 });
 
+router.post("/check", async (req, res) => {
+  const { phoneNumber } = req.body;
+  const user = await User.findOne({ phoneNumber });
+  console.log("checking" + user);
+  if (user) {
+    res.status(200).json({ message: "Exists" });
+  } else {
+    res.status(403).json({ message: "User not found" });
+  }
+});
 router.get("/products", async (req, res) => {
   const products = await Products.find({ published: true });
   // const products = {
