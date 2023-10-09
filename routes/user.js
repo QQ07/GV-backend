@@ -5,7 +5,7 @@ const { User, Products } = require("../db");
 const router = express.Router();
 
 router.get("/me", authenticateJwt, async (req, res) => {
-  const user = await User.findOne({ username: req.user.username });
+  const user = await User.findOne({ phoneNumber: req.number });
   console.log(user);
   if (!user) {
     res.status(403).json({ msg: "User doesn't exist" });
@@ -18,6 +18,7 @@ router.get("/me", authenticateJwt, async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   const { phoneNumber, name, email, registerAs } = req.body;
+  console.log(name);
   const user = await User.findOne({ phoneNumber });
   if (user) {
     console.log(user);
@@ -30,8 +31,8 @@ router.post("/signup", async (req, res) => {
       JoinedAs: registerAs,
     });
     await newUser.save();
-    const token = jwt.sign({ name, role: "user" }, SECRET, {
-      expiresIn: "1h",
+    const token = jwt.sign({ phoneNumber, role: "user" }, SECRET, {
+      expiresIn: "10h",
     });
     res.json({ message: "User created successfully", token });
   }
