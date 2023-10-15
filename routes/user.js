@@ -1,7 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const { authenticateJwt, SECRET } = require("../middleware/auth");
-const { User, Products } = require("../db");
+const { User, Products, ProductDetails } = require("../db");
 const router = express.Router();
 
 router.get("/me", authenticateJwt, async (req, res) => {
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
   console.log(phoneNumber + "trying to login");
   if (user) {
     const token = jwt.sign({ phoneNumber, role: "user" }, SECRET, {
-      expiresIn: "1h",
+      expiresIn: "10h",
     });
     res.json({ message: "Logged in successfully", token });
   } else {
@@ -62,11 +62,58 @@ router.post("/check", async (req, res) => {
     res.status(403).json({ message: "User not found" });
   }
 });
-router.get("/products", async (req, res) => {
-  const products = await Products.find({ published: true });
-  // const products = {
-  //   hello: "world",
-  // };
+//addProduct route expects body to be in this form
+// title: String,
+// description: String,
+// price: Number,
+// moq: Number,
+async function addProductToDB(newProduct) {
+  newProduct.verified = false;
+  const product = new Products(newProduct);
+  await product.save();
+  if (product._id) return 1;
+}
+router.post("/addProduct", async (req, res) => {
+  console.log("adding product", req.body);
+  req.body.verified = false;
+  const product = new Products(req.body);
+  product.save();
+  // if (product._id) return 1;
+  // let check = addProductToDB(req.body);
+  // if (check !== 1) res.json({ message: "Unable to add product" });
+  res.json({ message: "Product added successfully" });
+});
+
+router.post("/ProductDetails", async (req, res) => {
+  // const products = req.body;
+  console.log("here");
+  console.log(req.body);
+  const productd = new ProductDetails(req.body);
+  productd.save();
+  res.json("hello");
+});
+router.post("/addProducts", authenticateJwt, async (req, res) => {
+  try {
+    const products = req.body;
+    if (!Array.isArray(products) || products.length === 0) {
+      return res.status(400).send("Products should be a non-empty array.");
+    }
+    for (const product of products) {
+      product.verified = false;
+    }
+
+    const savedProducts = await Products.insertMany(products);
+
+    res.status(201).json(savedProducts);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.get("/products", authenticateJwt, async (req, res) => {
+  const products = await Products.find({ verified: true });
+  console.log(products);
   res.json({ products });
 });
 

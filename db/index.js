@@ -8,16 +8,37 @@ const userSchema = new mongoose.Schema({
 });
 
 const product = new mongoose.Schema({
-  title: String,
-  description: String,
-  price: Number,
-  moq: Number,
+  nameOfProduct: String,
+  moq1: Number,
+  ppp1: Number,
+  moq2: Number,
+  ppp2: Number,
+  moq3: Number,
+  ppp3: Number,
+  verified: Boolean,
+});
+const productDetails = new mongoose.Schema({
+  phoneNumber: String,
+  Pname: String,
+  LeadTimeInDays: String,
+  YearPresence: String,
+  shipping: String,
+  RnR: String,
+  storage: String,
+  Sampling: String,
+  TPM: String,
+  productLife: String,
+  manufacturingPlace: String,
+  capacity: String,
+  productType: String,
+  productSize: String,
 });
 
 const User = mongoose.model("User", userSchema);
 const Products = mongoose.model("Products", product);
-
+const ProductDetails = mongoose.model("ProductDetails", productDetails);
 module.exports = {
   User,
   Products,
+  ProductDetails,
 };
