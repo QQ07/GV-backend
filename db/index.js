@@ -33,12 +33,21 @@ const productDetails = new mongoose.Schema({
   productType: String,
   productSize: String,
 });
+const finalProducts = new mongoose.Schema({
+  productName: String,
+  imageLink: String,
+  price: String,
+  MoQ: String,
+  margin: String,
+});
 
 const User = mongoose.model("User", userSchema);
 const Products = mongoose.model("Products", product);
 const ProductDetails = mongoose.model("ProductDetails", productDetails);
+const FinalProducts = mongoose.model("FinalProducts", finalProducts);
 module.exports = {
   User,
   Products,
   ProductDetails,
+  FinalProducts,
 };

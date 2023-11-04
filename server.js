@@ -6,7 +6,9 @@ const cors = require("cors");
 const userRouter = require("./routes/user");
 const adminRouter = require("./routes/admin");
 const authRouter = require("./routes/auth");
+require("dotenv").config();
 
+const MongoPassword = process.env.MongoPassword;
 app.use(cors());
 app.use(express.json());
 
@@ -19,7 +21,7 @@ app.get("/", (req, res) => {
 });
 
 mongoose.connect(
-  "mongodb+srv://symblesolutions:GlobalVistar2023@cluster0.wsgyalp.mongodb.net/live"
+  `mongodb+srv://symblesolutions:${MongoPassword}@cluster0.wsgyalp.mongodb.net/live`
 );
 app.listen(process.env.PORT || 3001, () => {
   console.log(`App listening on port http://localhost:3001`);
